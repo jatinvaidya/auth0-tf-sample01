@@ -22,13 +22,13 @@ variable "auth0_custom_domain" {
 variable "auth0_sample_user_email" {
   type        = string
   description = "Sample user email"
-  default     = "test_user01@engine.com"
+  default     = "test_user01@example.com"
 }
 
 variable "auth0_sample_user_password" {
   type        = string
   description = "Sample user password"
-  default     = "test_user01@engine.com"
+  default     = "test_user01@example.com"
   sensitive   = true
 }
 
