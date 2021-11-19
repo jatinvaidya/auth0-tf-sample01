@@ -1,3 +1,4 @@
+## Route 53
 resource "aws_route53_record" "custom_domain_cname" {
   zone_id = var.aws_r53_hosted_zone_id
   name    = var.aws_r53_cname_record_name
@@ -9,6 +10,7 @@ resource "aws_route53_record" "custom_domain_cname" {
   ]
 }
 
+## Cloudwatch
 resource "aws_cloudwatch_log_group" "auth0_logs" {
   name              = "/aws/events/${var.aws_cloudwatch_log_group_name}"
   retention_in_days = 3
@@ -51,6 +53,7 @@ resource "aws_cloudwatch_event_target" "cloudwatch_event_target" {
   ]
 }
 
+## Lambda
 resource "aws_iam_role" "lambda_exec" {
   name               = "renew_m2m_token_lambda_role"
   assume_role_policy = <<EOF

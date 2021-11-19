@@ -1,4 +1,4 @@
-## Tenant
+## Tenant Settings
 resource "auth0_tenant" "example_tenant" {
   friendly_name = "Example Friendly Name"
   support_email = "support@example.com"
@@ -13,7 +13,7 @@ resource "auth0_tenant" "example_tenant" {
   ]
 }
 
-## Application
+## Applications
 resource "auth0_client" "example_spa" {
   name            = "Example SPA"
   description     = "Example SPA"
@@ -102,7 +102,7 @@ data "local_file" "login_html" {
   filename = "../files/page_templates/login.html"
 }
 
-# Simple Customization
+# New UL Branding Cusotmization
 resource "auth0_branding" "brand" {
   logo_url    = var.auth0_ulp_logo_url
   favicon_url = var.auth0_ulp_favicon_url
@@ -121,7 +121,7 @@ resource "auth0_branding" "brand" {
   ]
 }
 
-## Prompt
+## New UL Prompt Customization
 resource "auth0_prompt" "prompt" {
   universal_login_experience = "new"
   identifier_first           = false
@@ -130,7 +130,7 @@ resource "auth0_prompt" "prompt" {
   }
 }
 
-## Email Server
+## Email Provider
 resource "auth0_email" "mailtrap_provider" {
   name                 = "smtp"
   enabled              = true
@@ -161,7 +161,6 @@ resource "auth0_email_template" "email_template_change_password" {
 }
 
 ## Actions
-
 data "local_file" "action_post_login_decorate_idtoken" {
   filename = "../files/actions/post_login_decorate_idtoken.js"
 }
@@ -175,6 +174,7 @@ resource "auth0_action" "action_post_login_decorate_idtoken" {
   code = data.local_file.action_post_login_decorate_idtoken.content
 }
 
+## Resource Server (API)
 resource "auth0_resource_server" "example_api" {
   name        = "Example API"
   identifier  = "https://api.example.com"
@@ -196,6 +196,7 @@ resource "auth0_resource_server" "example_api" {
   skip_consent_for_verifiable_first_party_clients = true
 }
 
+## Log Stream - AWS Eventbridge
 resource "auth0_log_stream" "eventbridge" {
   name   = "AWS Eventbridge"
   type   = "eventbridge"
