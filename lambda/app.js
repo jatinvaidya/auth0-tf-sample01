@@ -72,8 +72,8 @@ exports.lambdaHandler = async (event, context) => {
             method: 'PATCH',
             url: `https://${AUTH0_DOMAIN}/api/v2/actions/actions/${AUTH0_ACTIONS_ID}`,
             headers: {
-                'Authorization': 'Bearer ' + mgmtApiAccessToken,
-                'Content-Type': 'application/json',
+                'authorization': 'Bearer ' + mgmtApiAccessToken,
+                'content-type': 'application/json',
             },
             data: actionsSecretRequest
         }
