@@ -13,12 +13,12 @@ let AUTH0_ACTIONS_ID = process.env.AUTH0_ACTIONS_ID;
  * Event doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-input-format
  * @param {Object} event - API Gateway Lambda Proxy Input Format
  *
- * Context doc: https://docs.aws.amazon.com/lambda/latest/dg/nodejs-prog-model-context.html 
+ * Context doc: https://docs.aws.amazon.com/lambda/latest/dg/nodejs-prog-model-context.html
  * @param {Object} context
  *
  * Return doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html
  * @returns {Object} object - API Gateway Lambda Proxy Output Format
- * 
+ *
  */
 exports.lambdaHandler = async (event, context) => {
     try {
@@ -35,7 +35,7 @@ exports.lambdaHandler = async (event, context) => {
         let options = {
             method: 'POST',
             url: tokenEndpoint,
-            config: { headers: { 'content-type': 'application/json' } },
+            headers: { 'content-type': 'application/json' },
             data: clientCredentialsRequest
         };
 
@@ -53,11 +53,12 @@ exports.lambdaHandler = async (event, context) => {
         options = {
             method: 'POST',
             url: tokenEndpoint,
-            config: { headers: { 'content-type': 'application/json' } },
+            headers: { 'content-type': 'application/json' },
             data: clientCredentialsRequest
         };
 
         tokenResponse = await axios(options);
+        let mgmtApiAccessToken = tokenResponse.data.access_token;
 
         // [3] Set the M2M Access Token from Step #1 as an Actions Secret
         let actionsSecretRequest = {
@@ -70,17 +71,20 @@ exports.lambdaHandler = async (event, context) => {
         options = {
             method: 'PATCH',
             url: `https://${AUTH0_DOMAIN}/api/v2/actions/actions/${AUTH0_ACTIONS_ID}`,
-            config: { headers: { 'content-type': 'application/json' } },
+            headers: {
+                'authorization': 'Bearer ' + mgmtApiAccessToken,
+                'content-type': 'application/json',
+            },
             data: actionsSecretRequest
         }
 
-        response = {
-            'statusCode': 200
-        }
+        response = await axios(options);
     } catch (err) {
         console.log(`oops: ${err}`);
         return err;
     }
 
-    return response
+    return {
+        'statusCode': 200
+    };
 };
