@@ -1,6 +1,9 @@
-auth0_domain                  = __auth0 tenant domain__
-auth0_tf_client_id            = __mgmt api client_id used by terraform__
-auth0_tf_client_secret        = __mgmt api client_secret used by terraform__
+env                               = __environment_code__ 
+auth0_domain                      = __auth0 tenant domain__
+auth0_tf_client_id                = __mgmt api client_id used by terraform__
+auth0_tf_client_secret            = __mgmt api client_secret used by terraform__
+auth0_update_action_client_id     = __mgmt api client_id used by lambda to update actions secret__
+auth0_update_action_client_secret = __mgmt api client_secret used by lambda to update actions secret__
 auth0_custom_domain           = __custom domain for auth0__
 auth0_sample_user_email       = __test user email__
 auth0_sample_user_password    = __test user password__

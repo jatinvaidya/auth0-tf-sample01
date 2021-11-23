@@ -48,6 +48,27 @@ resource "auth0_client_grant" "example_client_grant" {
   ]
 }
 
+resource "auth0_client" "example_m2m_auth0_api2" {
+  name            = "Example M2M for Auth0 API2"
+  description     = "Example M2M for Auth0 API2"
+  app_type        = "non_interactive"
+  oidc_conformant = true
+  is_first_party  = true
+  grant_types = [
+    "client_credentials"
+  ]
+}
+
+resource "auth0_client_grant" "example_client_grant_auth0_api2" {
+  client_id = auth0_client.example_m2m_auth0_api2.id
+  audience  = "https://${var.auth0_domain}/api/v2/"
+  scope     = ["read:actions", "update:actions"]
+  depends_on = [
+    auth0_client.example_m2m_auth0_api2
+  ]
+}
+
+
 ## Connection
 resource "auth0_connection" "exampledb" {
   name     = "exampledb"
