@@ -87,11 +87,14 @@ resource "aws_lambda_function" "renew_m2m_token" {
 
   environment {
     variables = {
-      REGION                     = var.aws_region
-      AUTH0_DOMAIN               = var.auth0_domain
-      AUTH0_CLIENT_ID            = auth0_client.example_m2m.id
-      AUTH0_LAMBDA_CLIENT_SECRET = auth0_client.example_m2m.client_secret
-      NODE_OPTIONS               = "--enable-source-maps"
+      REGION                       = var.aws_region
+      AUTH0_DOMAIN                 = var.auth0_domain
+      AUTH0_CLIENT_ID              = auth0_client.example_m2m.id
+      AUTH0_CLIENT_SECRET_ARN      = aws_secretsmanager_secret_version.example_m2m_client_secret.arn
+      AUTH0_AUDIENCE               = auth0_resource_server.example_api.identifier
+      AUTH0_API2_CLIENT_ID         = auth0_client.example_m2m_auth0_api2.id
+      AUTH0_API2_CLIENT_SECRET_ARN = aws_secretsmanager_secret_version.example_m2m_auth0_api2_client_secret.arn
+      NODE_OPTIONS                 = "--enable-source-maps"
     }
   }
 
@@ -100,3 +103,62 @@ resource "aws_lambda_function" "renew_m2m_token" {
     aws_iam_role.lambda_exec
   ]
 }
+
+resource "aws_secretsmanager_secret" "example_m2m_client_secret" {
+  name                    = "example_m2m_client_secret-${var.env}"
+  recovery_window_in_days = 0
+}
+
+resource "aws_secretsmanager_secret_version" "example_m2m_client_secret" {
+  secret_id     = aws_secretsmanager_secret.example_m2m_client_secret.id
+  secret_string = auth0_client.example_m2m.client_secret
+  depends_on = [
+    auth0_client.example_m2m
+  ]
+}
+
+resource "aws_secretsmanager_secret" "example_m2m_auth0_api2_client_secret" {
+  name                    = "example_m2m_auth0_api2_client_secret-${var.env}"
+  recovery_window_in_days = 0
+}
+
+resource "aws_secretsmanager_secret_version" "example_m2m_auth0_api2_client_secret" {
+  secret_id     = aws_secretsmanager_secret.example_m2m_auth0_api2_client_secret.id
+  secret_string = auth0_client.example_m2m_auth0_api2.client_secret
+  depends_on = [
+    auth0_client.example_m2m_auth0_api2
+  ]
+}
+
+resource "aws_iam_policy" "lambda_secretsmgr" {
+  name        = "lambda_secrets_manager-${var.env}"
+  path        = "/"
+  description = "IAM policy for accessing secrets from a lambda"
+
+  policy = <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "secretsmanager:GetResourcePolicy",
+                "secretsmanager:GetSecretValue",
+                "secretsmanager:DescribeSecret",
+                "secretsmanager:ListSecretVersionIds",
+                "secretsmanager:ListSecrets"
+            ],
+            "Resource": [
+                "${aws_secretsmanager_secret_version.example_m2m_client_secret}"
+            ]
+        }
+    ]
+  }
+EOF
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_sm" {
+  role       = aws_iam_role.lambda_exec.name
+  policy_arn = aws_iam_policy.lambda_secretsmgr.arn
+}
+

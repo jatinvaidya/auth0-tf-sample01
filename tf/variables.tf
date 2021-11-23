@@ -1,3 +1,8 @@
+variable "env" {
+  type        = string
+  description = "environment code"
+}
+
 variable "auth0_domain" {
   type        = string
   description = "auth0 domain"
@@ -88,5 +93,13 @@ variable "aws_lambda_s3_key" {
 }
 
 variable "aws_lambda_handler" {
+  type = string
+}
+
+variable "auth0_update_action_client_id" {
+  type = string
+}
+
+variable "auth0_update_action_client_secret" {
   type = string
 }
