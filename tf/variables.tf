@@ -1,3 +1,8 @@
+variable "env" {
+  type        = string
+  description = "environment code"
+}
+
 variable "auth0_domain" {
   type        = string
   description = "auth0 domain"
